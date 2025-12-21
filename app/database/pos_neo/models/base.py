@@ -8,6 +8,7 @@ from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import Column, DateTime, String, func
 from typing import Optional
 from datetime import datetime
+from app.database.constant.use_stat_enum import UseStatus
 
 
 class Base(DeclarativeBase):
@@ -83,9 +84,19 @@ class AuditMixin:
     )
 
 class UseMixin:
-    use_stat_cd: Optional[str] = Column(
+    """
+    사용 상태 Mixin 클래스
+    UseStatus Enum을 사용합니다.
+    
+    사용 예시:
+        class User(Base, UseMixin):
+            ...
+        # 사용
+        user.use_stat_cd = UseStatus.USABLE
+    """
+    use_stat_cd: Optional[UseStatus] = Column(
         "use_stat_cd",
-        String(40),
+        String(40),  # DB에는 VARCHAR로 저장, Python에서는 Enum 사용
         nullable=True,
         comment="사용 상태 코드"
     )

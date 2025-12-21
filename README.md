@@ -82,3 +82,10 @@ docker-compose down
 docker-compose build --no-cache
 docker-compose up -d
 ```
+
+
+### DB 리소스
+- ORM: 별도 컨넥션 풀 생성
+- Mybatis: 기본 생성된 풀에서 사용
+현재 setting 된 pool 사이즈는 최종적으로 *2가 됨. ORM + Mybatis
+추후 ORM과 Mybatis 구분하여 리소스 풀 설정 필요
