@@ -32,28 +32,55 @@ async def init_db_pool() -> asyncpg.Pool:
         return _db_pool
     
     try:
+        # 연결 시도 전 설정값 출력 (디버깅용)
+        password_display = "***" if settings.database.password else "(없음)"
+        print(f"🔌 PostgreSQL 연결 시도 중...")
+        print(f"   - Host: {settings.database.host}:{settings.database.port}")
+        print(f"   - Database: {settings.database.name}")
+        print(f"   - User: {settings.database.user}")
+        print(f"   - Password: {password_display}")
+        
+        # SSL 설정 처리
+        ssl_config = None
+        if settings.database.ssl_mode:
+            if settings.database.ssl_mode.lower() == "require":
+                ssl_config = True  # SSL 필수
+            elif settings.database.ssl_mode.lower() == "prefer":
+                ssl_config = "prefer"  # SSL 선호
+            elif settings.database.ssl_mode.lower() == "disable":
+                ssl_config = False  # SSL 비활성화
+            else:
+                ssl_config = True  # 기본값: require
+        
         # 연결 풀 생성
         # min_size: 최소 연결 수 (기본값: 10)
         # max_size: 최대 연결 수 (기본값: 10)
         # max_queries: 연결당 최대 쿼리 수 (기본값: 50000)
         # max_inactive_connection_lifetime: 비활성 연결 유지 시간 (초)
-        _db_pool = await asyncpg.create_pool(
-            host=settings.database.host,
-            port=settings.database.port,
-            user=settings.database.user,
-            password=settings.database.password,
-            database=settings.database.name,
-            min_size=1,  # 최소 연결 수
-            max_size=settings.database.pool_size,  # 최대 연결 수 (config에서 가져옴)
-            max_queries=50000,  # 연결당 최대 쿼리 수
-            max_inactive_connection_lifetime=300,  # 5분간 비활성 연결 유지
-            command_timeout=60,  # 쿼리 타임아웃 (초)
-        )
+        pool_kwargs = {
+            "host": settings.database.host,
+            "port": settings.database.port,
+            "user": settings.database.user,
+            "password": settings.database.password,
+            "database": settings.database.name,
+            "min_size": 1,  # 최소 연결 수
+            "max_size": settings.database.pool_size,  # 최대 연결 수 (config에서 가져옴)
+            "max_queries": 50000,  # 연결당 최대 쿼리 수
+            "max_inactive_connection_lifetime": 300,  # 5분간 비활성 연결 유지
+            "command_timeout": 60,  # 쿼리 타임아웃 (초)
+        }
+        
+        # SSL 설정이 있으면 추가
+        if ssl_config is not None:
+            pool_kwargs["ssl"] = ssl_config
+        
+        _db_pool = await asyncpg.create_pool(**pool_kwargs)
         
         print(f"✅ PostgreSQL 연결 풀 생성 완료")
         print(f"   - Host: {settings.database.host}:{settings.database.port}")
         print(f"   - Database: {settings.database.name}")
         print(f"   - User: {settings.database.user}")
+        print(f"   - SSL Mode: {settings.database.ssl_mode or 'disable'}")
         print(f"   - Pool Size: {settings.database.pool_size}")
         
         return _db_pool
@@ -169,4 +196,5 @@ async def execute_insert(query: str, *args) -> str:
             # RETURNING 절이 있는 경우 첫 번째 컬럼 반환
             return result[0] if len(result) > 0 else None
         return None
+
 

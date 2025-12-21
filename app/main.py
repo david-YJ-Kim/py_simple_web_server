@@ -27,7 +27,7 @@ app.include_router(sample_router)
 async def startup_event():
     """ 서버 시작 시 실행되는 이벤트 """
     print(" 🚀 Start Web Server")
-    print(f"config: {settings}")
+    print(f"config: {settings.__dict__}")
     
     # 데이터베이스 연결 풀 초기화
     try:

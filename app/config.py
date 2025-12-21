@@ -16,6 +16,15 @@ from pydantic_settings import BaseSettings
 env_path = Path(__file__).parent.parent / ".env"
 if env_path.exists():
     load_dotenv(env_path)
+    print(f"✅ .env 파일 로드 완료: {env_path}")
+    # 디버깅: DB_PASSWORD 환경 변수 확인 (보안상 값은 표시하지 않음)
+    db_password = os.getenv("DB_PASSWORD")
+    if db_password:
+        print(f"   - DB_PASSWORD: {'*' * len(db_password)} (길이: {len(db_password)})")
+    else:
+        print(f"   ⚠️  DB_PASSWORD 환경 변수가 설정되지 않았습니다.")
+else:
+    print(f"⚠️  .env 파일을 찾을 수 없습니다: {env_path}")
 
 
 class ServerSettings(BaseSettings):
@@ -53,6 +62,7 @@ class DatabaseSettings(BaseSettings):
     name: str = Field(default="myapp")  # YAML에서만 가져옴 (env 제거)
     user: str = Field(default="user")  # YAML에서만 가져옴 (env 제거)
     password: str = Field(default="password", env="DB_PASSWORD")  # 환경 변수에서만 가져옴
+    ssl_mode: Optional[str] = Field(default=None)  # SSL 모드 (require, prefer, disable 등)
     pool_size: int = 10
     max_overflow: int = 20
 
@@ -124,7 +134,31 @@ class Settings:
         self.server = ServerSettings(**yaml_config.get("server", {}))
         self.cors = CORSSettings(**yaml_config.get("cors", {}))
         self.logging = LoggingSettings(**yaml_config.get("logging", {}))
+        
+        # DatabaseSettings 생성: kwargs를 전달하지 않고 환경 변수에서만 읽도록 함
+        # Pydantic BaseSettings는 kwargs가 있으면 환경 변수를 무시하므로,
+        # password는 kwargs에서 제외하고 환경 변수에서만 읽어야 함
         self.database = DatabaseSettings(**db_config)  # password 제외된 설정 사용
+        
+        # password가 기본값이면 환경 변수에서 직접 설정
+        if self.database.password == "password" or not self.database.password:
+            env_password = os.getenv("DB_PASSWORD")
+            if env_password:
+                # Pydantic 모델의 필드를 직접 업데이트
+                self.database.password = env_password
+                print(f"✅ 환경 변수에서 password 로드 완료: {'*' * len(env_password)} (길이: {len(env_password)})")
+            else:
+                print(f"⚠️  DB_PASSWORD 환경 변수가 설정되지 않았습니다.")
+        
+        # 디버깅: DatabaseSettings 생성 후 password 확인
+        db_password_loaded = self.database.password
+        if db_password_loaded and db_password_loaded != "password":  # 기본값이 아닌 경우
+            print(f"✅ DatabaseSettings.password 최종 확인: {'*' * len(db_password_loaded)} (길이: {len(db_password_loaded)})")
+        else:
+            print(f"⚠️  DatabaseSettings.password가 기본값입니다. 환경 변수 DB_PASSWORD를 확인하세요.")
+            print(f"   - 현재 값: {db_password_loaded}")
+            print(f"   - 환경 변수 DB_PASSWORD: {os.getenv('DB_PASSWORD', '(없음)')}")
+        
         self.api = APISettings(**yaml_config.get("api", {}))
         
         # CORS allow_origins 문자열 파싱 (환경 변수에서)

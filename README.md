@@ -51,7 +51,15 @@ python -m app.dependencies.database
 python -m app.main
 ```
 
+
+### 3. 서버 실행 (Docker)
+```bash
+python -m app.main
+```
+
 ### 4. 테스트 실행
 ```bash
-python -m pytest tests/test_note_schema.py -v
+docker-compose down
+docker-compose build --no-cache
+docker-compose up -d
 ```
