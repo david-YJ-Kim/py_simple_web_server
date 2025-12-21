@@ -3,6 +3,7 @@ SQLAlchemy Base 클래스 및 공통 Mixin
 
 Spring Boot의 @MappedSuperclass와 유사한 역할
 """
+import uuid
 from sqlalchemy.orm import DeclarativeBase
 from sqlalchemy import Column, DateTime, String, func
 from typing import Optional
@@ -21,6 +22,7 @@ class ObjIdMixin:
         "obj_id",
         String(100),
         primary_key=True,
+        default=lambda: uuid.uuid4().hex,  # 32자리 hex 문자열
         nullable= False,
         comment="레코드 ID"
     )
