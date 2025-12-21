@@ -1,0 +1,62 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+    container_name: fastapi_app_prod
+    ports:
+      - "8000:8000"
+    environment:
+      # 프로덕션 환경
+      - ENV=prod
+      # 보안 정보는 환경 변수로 주입
+      # 프로덕션에서는 Docker Secrets 또는 외부 환경 변수 관리 시스템 사용 권장
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+      - API_KEY=${API_KEY}
+      # 로깅 설정
+      - LOG_LEVEL=${LOG_LEVEL:-WARNING}
+      - LOG_FILE=${LOG_FILE:-logs/app.prod.log}
+    volumes:
+      # 로그 파일을 볼륨으로 마운트 (호스트에 저장)
+      - ./logs:/app/logs
+      # 프로덕션에서는 코드 볼륨 마운트 제거 (이미지 내부 코드 사용)
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    # 리소스 제한 (선택사항)
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  # 데이터베이스는 추후 추가 예정
+  # db:
+  #   image: postgres:15
+  #   container_name: fastapi_db_prod
+  #   environment:
+  #     - POSTGRES_DB=${DB_NAME}
+  #     - POSTGRES_USER=${DB_USER}
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD}
+  #   volumes:
+  #     - postgres_data_prod:/var/lib/postgresql/data
+  #   restart: always
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '1'
+  #         memory: 1G
+
+# volumes:
+#   postgres_data_prod:
+

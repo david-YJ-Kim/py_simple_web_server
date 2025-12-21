@@ -1,0 +1,52 @@
+# 애플리케이션 설정 파일 (Production 환경)
+# 프로덕션 서버용 설정
+
+# 서버 설정
+server:
+  host: "0.0.0.0"
+  port: 8000
+  debug: false
+  reload: false
+  title: "Simple Web Server w/ FastAPI"
+  description: "Simple Web Server w/ FastAPI - Production Environment"
+  version: "0.0.1"
+
+# CORS 설정
+cors:
+  allow_origins:
+    - "https://example.com"
+    - "https://www.example.com"
+  allow_credentials: true
+  allow_methods:
+    - "GET"
+    - "POST"
+    - "PUT"
+    - "DELETE"
+    - "OPTIONS"
+  allow_headers:
+    - "Content-Type"
+    - "Authorization"
+    - "X-Requested-With"
+
+# 로깅 설정
+logging:
+  level: "WARNING"  # Production에서는 WARNING 이상만 로깅
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+  file: "logs/app.prod.log"
+  max_bytes: 52428800  # 50MB
+  backup_count: 10
+
+# 데이터베이스 설정
+database:
+  host: "prod-db.example.com"
+  port: 5432
+  name: "myapp_prod"
+  pool_size: 20
+  max_overflow: 40
+
+# API 설정
+api:
+  timeout: 60
+  retry_count: 5
+  rate_limit: 1000  # requests per minute
+

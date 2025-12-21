@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: fastapi_app
+    ports:
+      - "8000:8000"
+    environment:
+      # 환경 선택 (local, dev, prod)
+      - ENV=${ENV:-local}
+      # 보안 정보는 환경 변수로 주입 (호스트의 .env 파일에서 읽기)
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SECRET_KEY=${SECRET_KEY}
+      - API_KEY=${API_KEY}
+      # 로깅 설정
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - LOG_FILE=${LOG_FILE:-logs/app.log}
+    volumes:
+      # 로그 파일을 볼륨으로 마운트 (호스트에 저장)
+      - ./logs:/app/logs
+      # 개발 시 코드 변경 반영 (선택사항 - 프로덕션에서는 제거)
+      # - ./app:/app/app
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/docs"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # 데이터베이스는 추후 추가 예정
+  # db:
+  #   image: postgres:15
+  #   container_name: fastapi_db
+  #   environment:
+  #     - POSTGRES_DB=${DB_NAME}
+  #     - POSTGRES_USER=${DB_USER}
+  #     - POSTGRES_PASSWORD=${DB_PASSWORD}
+  #   volumes:
+  #     - postgres_data:/var/lib/postgresql/data
+  #   ports:
+  #     - "5432:5432"
+
+# volumes:
+#   postgres_data:
+
