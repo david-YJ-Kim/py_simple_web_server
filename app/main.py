@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.controller.sample_controller import sample_router
 from app.config import settings
-from app.database.connection import init_db_pool, close_db_pool
+from app.database.pos_neo.connection import init_db_pool, close_db_pool
 
 
 app = FastAPI(

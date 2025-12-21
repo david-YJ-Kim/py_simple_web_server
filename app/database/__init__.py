@@ -1,7 +1,7 @@
 """
 데이터베이스 연결 관리 모듈
 """
-from app.database.connection import (
+from app.database.pos_neo.connection import (
     get_db_pool,
     close_db_pool,
     init_db_pool,

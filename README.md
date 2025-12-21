@@ -33,6 +33,25 @@ root/
     ├── API_DESIGN.md                               # API 설계 문서
     └── DEVELOPMENT_GUIDE.md                        # 개발 가이드
 ```
+## DB 연결 구분 방식
+멀티 데이터 소스를 지원하는 어플리케이션으로 DB별 호스팅별 설정을 구분함
+구분 기준: DB 타입별 * 호스팅별
+### DB 타입
+- PostgreSQL : POS
+- Oracle : OCR
+- MySQL  : MSQ
+- Sqlite : SQL
+
+### 호스팅별
+호스팅 사이트 약자로 구분함
+- NeonDB : NEO
+- ??????? : ABS
+- 로컬 : LCL
+### DB 구분
+- POS_NEO: PostgreSQL + NeonDB
+- SQL_LCL: Sqlite + Local
+
+
 
 ## 🛠️ 설치 및 실행
 
