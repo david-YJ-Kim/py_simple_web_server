@@ -165,3 +165,4 @@ class BaseRepository(Generic[T]):
         )
         return len(list(result.scalars().all()))
 
+

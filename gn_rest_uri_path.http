@@ -1,0 +1,58 @@
+### Base GET req
+GET http://localhost:8000/api/v1/simple
+
+
+### GET request to example server
+GET http://localhost:8000/api/v1/uri-paths/api/API_PRODUCT_CREATE
+
+
+### Create new URI path (POST)
+POST http://localhost:8000/api/v1/uri-paths
+Content-Type: application/json
+
+{
+  "api_id": "PATH{{$random.integer(100, 999)}}",
+  "path_order": {{$random.integer(1, 10)}},
+  "path_value": "users",
+  "is_param_use": false,
+  "param_nm": "userId",
+  "param_typ": "string",
+  "param_desc": "사용자 ID",
+  "example_val": "user123",
+  "use_stat_cd": "USABLE",
+  "crt_user_id": "admin",
+  "mdfy_user_id": "admin"
+}
+
+
+### Create new URI path with minimal fields
+POST http://localhost:8000/api/v1/uri-paths
+Content-Type: application/json
+
+{
+  "api_id": "PATH001",
+  "path_order": 1,
+  "path_value": "users"
+}
+
+
+### Create new URI path with all fields
+POST http://localhost:8000/api/v1/uri-paths
+Content-Type: application/json
+
+{
+  "api_id": "API_USER_GET",
+  "path_order": {{$random.integer(1, 10)}},
+  "path_value": "products/{{$random.uuid}}",
+  "is_param_use": true,
+  "param_nm": "productId",
+  "param_typ": "uuid",
+  "param_desc": "상품 ID (UUID 형식)",
+  "example_val": "{{$random.uuid}}",
+  "use_stat_cd": "USABLE",
+  "crt_user_id": "system",
+  "mdfy_user_id": "system",
+  "tid": "{{$timestamp}}",
+  "rsn_cd": "CREATE",
+  "trns_cm": "INIT"
+}

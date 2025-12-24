@@ -43,7 +43,7 @@ def get_engine() -> AsyncEngine:
         
         _engine = create_async_engine(
             database_url,
-            echo=False,  # SQL 쿼리 로깅 (개발 시 True로 변경)
+            echo=settings.database.echo_sql,  # SQL 쿼리 로깅 (config.yaml에서 설정)
             pool_pre_ping=True,  # 연결 유효성 검사
             pool_size=settings.database.pool_size,
             max_overflow=settings.database.max_overflow,

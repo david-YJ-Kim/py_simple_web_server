@@ -39,6 +39,7 @@ database:
   # password는 보안상 .env 파일의 DB_PASSWORD 환경 변수에서만 가져옵니다
   pool_size: 5
   max_overflow: 10
+  echo_sql: true          # SQL 쿼리 로그 출력 (true: 쿼리 출력, false: 출력 안함)
 
 # API 설정
 api:

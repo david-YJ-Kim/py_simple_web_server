@@ -65,6 +65,7 @@ class DatabaseSettings(BaseSettings):
     ssl_mode: Optional[str] = Field(default=None)  # SSL 모드 (require, prefer, disable 등)
     pool_size: int = 10
     max_overflow: int = 20
+    echo_sql: bool = Field(default=False)  # SQL 쿼리 로그 출력 여부
 
 
 class APISettings(BaseSettings):

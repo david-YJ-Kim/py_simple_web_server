@@ -164,3 +164,4 @@ class GnRestUriPathRepository(BaseRepository[GnRestUriPath]):
         )
         return len(list(result.scalars().all()))
 
+
